@@ -838,7 +838,7 @@ static void set_servos(void)
             } else {
                 channel_throttle->calc_pwm();                
             }
-            /*----------------*/
+            /----------------*/
              bool allowPWMcalc = true;
   
  	    //// Allow engine warm up for when on Catapult awaiting launch ////
