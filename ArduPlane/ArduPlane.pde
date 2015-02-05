@@ -1035,9 +1035,10 @@ static void one_second_loop()
 #endif
 
 #if LOGGING_ENABLED == ENABLED
+	// Send Firmware string to GCS every 30 seconds
 	static counter uint8_t counter;
 	counter++;
-	if(counter > 19)
+	if(counter > 29)
 	{
 	   gcs_send_text_P(SEVERITY_LOW, PSTR("Firmware " THISFIRMWARE));
 	   counter = 0;
