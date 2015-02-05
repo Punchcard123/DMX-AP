@@ -20,3 +20,9 @@
  *  // 2. HIL_MODE_SENSORS: full sensor simulation
  *
  */
+/*////////// For X-Plane Simulation////////////////////////
+// HIL_PROTOCOL_XPLANE    Configure for the X-plane HIL interface.
+// HIL_MODE_SENSORS       Simulator provides raw sensor values.
+#define HIL_MODE				HIL_MODE_SENSORS
+#define HIL_PROTOCOL			HIL_PROTOCOL_XPLANE
+/////////////////////////////////////////////////////////*/
