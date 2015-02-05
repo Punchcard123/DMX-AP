@@ -582,6 +582,9 @@ static bool auto_throttle_mode;
 // this controls throttle suppression in auto modes
 static bool throttle_suppressed;
 
+// The prelaunch_throttle % used for catapult launches.
+static int16_t prelaunch_throttle = 30;  // Changed from 0% to 30%, we use radio_in limited by preLaunch_throttle
+
 AP_SpdHgtControl::FlightStage flight_stage = AP_SpdHgtControl::FLIGHT_NORMAL;
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -739,10 +742,13 @@ static uint16_t mainLoop_count;
 // Camera/Antenna mount tracking and stabilisation stuff
 // --------------------------------------
 #if MOUNT == ENABLED
-// current_loc uses the baro/gps soloution for altitude rather than gps only.
-// mabe one could use current_loc for lat/lon too and eliminate g_gps alltogether?
+// current_loc uses the baro/gps solution for altitude rather than gps only.
+// maybe one could use current_loc for lat/lon too and eliminate g_gps alltogether?
 static AP_Mount camera_mount(ahrs, current_loc);
 #endif
+
+// DMX mod ... perhaps incorporate into FlightStage instead later?
+static uint16_t WP_mission_phase = 0;       // Used to determine when to active/deactivate mount and camera modes
 
 ////////////////////////////////////////////////////////////////////////////////
 // Arming/Disarming mangement class
