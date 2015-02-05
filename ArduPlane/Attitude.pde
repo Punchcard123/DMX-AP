@@ -830,6 +830,7 @@ static void set_servos(void)
             channel_throttle->calc_pwm();                
         } else if (suppress_throttle()) {
             // throttle is suppressed in auto mode
+            /*----------------//    
             channel_throttle->servo_out = 0;
             if (g.throttle_suppress_manual) {
                 // manual pass through of throttle while throttle is suppressed
@@ -837,6 +838,42 @@ static void set_servos(void)
             } else {
                 channel_throttle->calc_pwm();                
             }
+            /*----------------*/
+             bool allowPWMcalc = true;
+  
+ 	    //// Allow engine warm up for when on Catapult awaiting launch ////
+ 	    // Don't engage throttle unless we have a 3D GPS lock
+ 	    if (gps.status() < AP_GPS::GPS_OK_FIX_3D)
+ 	    {
+     		channel_throttle->servo_out = 0; 
+ 	    } else if (control_mode==AUTO && auto_state.takeoff_complete == false && auto_takeoff_check() == false
+ 	    	     &&	g.takeoff_throttle_min_speed >1.7f && g.takeoff_throttle_min_accel > 1.7f)
+     	    {
+             	// Logic below uses radio_in limited by prelaunch_throttle value
+                 int16_t highThrottle = channel_throttle->radio_min.get() + (int16_t)(prelaunch_throttle*
+                 	(channel_throttle->radio_max.get()-
+                 	channel_throttle->radio_min.get())/100.0);
+                 channel_throttle->radio_out = constrain_int16(
+                 	channel_throttle->radio_in, 
+                 	channel_throttle->radio_min.get(), highThrottle);
+                 allowPWMcalc = false;
+             }
+             else
+             {
+     	     	channel_throttle->servo_out = 0;
+     	     }
+            
+             if (g.throttle_suppress_manual)
+             {
+                 // FULL manual pass through of throttle while throttle is suppressed
+                 channel_throttle->radio_out = channel_throttle->radio_in;
+             } 
+             else 
+             {
+             	if(allowPWMcalc)
+                   channel_throttle->calc_pwm();             
+             }	////////// End DMX mods
+
         } else if (g.throttle_passthru_stabilize && 
                    (control_mode == STABILIZE || 
                     control_mode == TRAINING ||
