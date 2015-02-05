@@ -1036,7 +1036,7 @@ static void one_second_loop()
 
 #if LOGGING_ENABLED == ENABLED
 	// Send Firmware string to GCS every 30 seconds
-	static counter uint8_t counter;
+	static uint8_t counter;
 	counter++;
 	if(counter > 29)
 	{
