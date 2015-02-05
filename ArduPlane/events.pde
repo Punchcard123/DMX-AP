@@ -68,7 +68,8 @@ static void failsafe_long_on_event(enum failsafe_state fstype)
     case CIRCLE:
         if(g.long_fs_action == 2) {
             set_mode(FLY_BY_WIRE_A);
-        } else {
+        } else if(isOKtoRTL())
+        {
             set_mode(RTL);
         }
         break;
@@ -78,7 +79,8 @@ static void failsafe_long_on_event(enum failsafe_state fstype)
     case LOITER:
         if(g.long_fs_action == 2) {
             set_mode(FLY_BY_WIRE_A);
-        } else if (g.long_fs_action == 1) {
+        } else if (g.long_fs_action == 1 && isOKtoRTL())
+        {
             set_mode(RTL);
         }
         break;
@@ -91,6 +93,14 @@ static void failsafe_long_on_event(enum failsafe_state fstype)
         gcs_send_text_P(SEVERITY_HIGH, PSTR("No GCS heartbeat."));
     }
     gcs_send_text_fmt(PSTR("flight mode = %u"), (unsigned)control_mode);
+}
+
+static bool isOKtoRTL()
+{
+    // ToDo: Put some logic here //
+    ///////////////////////////////
+    
+    return true;
 }
 
 static void failsafe_short_off_event()
@@ -114,8 +124,11 @@ void low_battery_event(void)
     }
     gcs_send_text_fmt(PSTR("Low Battery %.2fV Used %.0f mAh"),
                       battery.voltage(), battery.current_total_mah());
-    set_mode(RTL);
-    aparm.throttle_cruise.load();
+    if(isOKtoRTL())
+    {
+        set_mode(RTL);
+        aparm.throttle_cruise.load();
+    }
     failsafe.low_battery = true;
     AP_Notify::flags.failsafe_battery = true;
 }
